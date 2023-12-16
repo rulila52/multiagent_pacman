@@ -141,7 +141,7 @@ def end_graphics():
         sleep(1)
         if _root_window != None: 
           _root_window.destroy()
-      except SystemExit, e:
+      except SystemExit as e:
         print('Ending graphics raised an exception:', e)
     finally:
       _root_window = None
@@ -342,7 +342,7 @@ def move_by(object, x, y=None,
             d_w=Tkinter.tkinter.DONT_WAIT):
     if y is None:
         try: x, y = x
-        except: raise Exception, 'incomprehensible coordinates' 
+        except: raise Exception('incomprehensible coordinates')
     
     horiz = True
     newCoords = []
