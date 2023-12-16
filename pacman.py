@@ -218,7 +218,10 @@ class GameState:
     """
     Allows two states to be compared.
     """
-    return self.data == other.data
+    # Проверяем, что other не является None, прежде чем обращаться к атрибуту data
+    if other is not None:
+      return self.data == other.data
+    return False  # если other равен None, возвращаем False
 
   def __hash__( self ):
     """
