@@ -46,29 +46,32 @@ class ReflexAgent(Agent):
     return legalMoves[chosenIndex]
 
   def evaluationFunction(self, currentGameState, action):
-    """
-    Design a better evaluation function here.
-
-    The evaluation function takes in the current and proposed successor
-    GameStates (pacman.py) and returns a number, where higher numbers are better.
-
-    The code below extracts some useful information from the state, like the
-    remaining food (oldFood) and Pacman position after moving (newPos).
-    newScaredTimes holds the number of moves that each ghost will remain
-    scared because of Pacman having eaten a power pellet.
-
-    Print out these variables to see what you're getting, then combine them
-    to create a masterful evaluation function.
-    """
-    # Useful information you can extract from a GameState (pacman.py)
     successorGameState = currentGameState.generatePacmanSuccessor(action)
     newPos = successorGameState.getPacmanPosition()
     oldFood = currentGameState.getFood()
     newGhostStates = successorGameState.getGhostStates()
     newScaredTimes = [ghostState.scaredTimer for ghostState in newGhostStates]
 
-    "*** YOUR CODE HERE ***"
-    return successorGameState.getScore()
+    # Расстояние до ближайшей еды
+    minFoodDistance = min([util.manhattanDistance(newPos, food) for food in oldFood.asList()])
+
+    # Оценка призраков и режима испуга
+    ghostEval = 0
+    for ghostState, scaredTime in zip(newGhostStates, newScaredTimes):
+      ghostPos = ghostState.getPosition()
+      if scaredTime == 0 and util.manhattanDistance(newPos, ghostPos) < 3:
+        # Если призрак не в режиме испуга и близко к пакману, уменьшаем оценку
+        ghostEval -= 100
+      elif scaredTime > 0 and util.manhattanDistance(newPos, ghostPos) < scaredTime:
+        # Если призрак в режиме испуга и близко к пакману, увеличиваем оценку
+        ghostEval += 50
+
+
+    minFoodDistanceScore = 2 if minFoodDistance == 0 else 1/minFoodDistance
+
+    # Суммарная оценка, учитывающая расстояние до еды и состояние призраков
+    evaluation = successorGameState.getScore() + minFoodDistanceScore + ghostEval
+    return evaluation
 
 def scoreEvaluationFunction(currentGameState):
   """
