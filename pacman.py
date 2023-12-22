@@ -46,6 +46,8 @@ import sys, types, time, random, os
 # YOUR INTERFACE TO THE PACMAN WORLD: A GameState #
 ###################################################
 
+pacmanIndex = 0
+
 class GameState:
   """
   A GameState specifies the full game state, including the food, capsules,
@@ -65,13 +67,13 @@ class GameState:
   # Accessor methods: use these to access state data #
   ####################################################
 
-  def getLegalActions( self, agentIndex=0 ):
+  def getLegalActions( self, agentIndex=pacmanIndex ):
     """
     Returns the legal actions for the agent specified.
     """
     if self.isWin() or self.isLose(): return []
 
-    if agentIndex == 0:  # Pacman is moving
+    if agentIndex == pacmanIndex:  # Pacman is moving
       return PacmanRules.getLegalActions( self )
     else:
       return GhostRules.getLegalActions( self, agentIndex )
@@ -87,14 +89,14 @@ class GameState:
     state = GameState(self)
 
     # Let agent's logic deal with its action's effects on the board
-    if agentIndex == 0:  # Pacman is moving
+    if agentIndex == pacmanIndex:  # Pacman is moving
       state.data._eaten = [False for i in range(state.getNumAgents())]
       PacmanRules.applyAction( state, action )
     else:                # A ghost is moving
       GhostRules.applyAction( state, action, agentIndex )
 
     # Time passes
-    if agentIndex == 0:
+    if agentIndex == pacmanIndex:
       state.data.scoreChange += -TIME_PENALTY # Penalty for waiting around
     else:
       GhostRules.decrementTimer( state.data.agentStates[agentIndex] )
@@ -108,13 +110,13 @@ class GameState:
     return state
 
   def getLegalPacmanActions( self ):
-    return self.getLegalActions( 0 )
+    return self.getLegalActions( pacmanIndex )
 
   def generatePacmanSuccessor( self, action ):
     """
     Generates the successor state after the specified pacman move
     """
-    return self.generateSuccessor( 0, action )
+    return self.generateSuccessor( pacmanIndex, action )
 
   def getPacmanState( self ):
     """
@@ -123,21 +125,21 @@ class GameState:
     state.pos gives the current position
     state.direction gives the travel vector
     """
-    return self.data.agentStates[0].copy()
+    return self.data.agentStates[pacmanIndex].copy()
 
   def getPacmanPosition( self ):
-    return self.data.agentStates[0].getPosition()
+    return self.data.agentStates[pacmanIndex].getPosition()
 
   def getGhostStates( self ):
     return self.data.agentStates[1:]
 
   def getGhostState( self, agentIndex ):
-    if agentIndex == 0 or agentIndex >= self.getNumAgents():
+    if agentIndex == pacmanIndex or agentIndex >= self.getNumAgents():
       raise Exception("Invalid index passed to getGhostState")
     return self.data.agentStates[agentIndex]
 
   def getGhostPosition( self, agentIndex ):
-    if agentIndex == 0:
+    if agentIndex == pacmanIndex:
       raise Exception("Pacman's index passed to getGhostPosition")
     return self.data.agentStates[agentIndex].getPosition()
 

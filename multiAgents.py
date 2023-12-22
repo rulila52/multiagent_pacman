@@ -12,6 +12,8 @@ import random, util
 
 from game import Agent
 
+pacmanIndex = 0
+
 class ReflexAgent(Agent):
   """
     A reflex agent chooses an action at each choice point by examining
@@ -99,7 +101,7 @@ class MultiAgentSearchAgent(Agent):
   """
 
   def __init__(self, evalFn = 'scoreEvaluationFunction', depth = '2'):
-    self.index = 0 # Pacman is always agent index 0
+    self.index = pacmanIndex # Pacman is always agent index 0
     self.evaluationFunction = util.lookup(evalFn, globals())
     self.depth = int(depth)
 
@@ -109,27 +111,22 @@ class MinimaxAgent(MultiAgentSearchAgent):
   """
 
   def getAction(self, gameState):
-    """
-      Returns the minimax action from the current gameState using self.depth
-      and self.evaluationFunction.
+    legalActions = gameState.getLegalActions(pacmanIndex)
+    scores = [self.minimax(gameState.generateSuccessor(pacmanIndex, action), 1, pacmanIndex) for action in legalActions]
+    bestAction = legalActions[scores.index(max(scores))]
+    return bestAction
 
-      Here are some method calls that might be useful when implementing minimax.
+  def minimax(self, state, depth, agentIndex):
+    if depth == self.depth or state.isWin() or state.isLose():
+      return self.evaluationFunction(state)
 
-      gameState.getLegalActions(agentIndex):
-        Returns a list of legal actions for an agent
-        agentIndex=0 means Pacman, ghosts are >= 1
+    legalActions = state.getLegalActions(agentIndex)
+    nextAgent = (agentIndex + 1) % state.getNumAgents()
 
-      Directions.STOP:
-        The stop direction, which is always legal
-
-      gameState.generateSuccessor(agentIndex, action):
-        Returns the successor game state after an agent takes an action
-
-      gameState.getNumAgents():
-        Returns the total number of agents in the game
-    """
-    "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
+    if agentIndex == pacmanIndex:  # Ход Pacman (слой Max)
+      return max(self.minimax(state.generateSuccessor(agentIndex, action), depth, nextAgent) for action in legalActions)
+    else:  # Ход призраков (слой Min)
+      return min(self.minimax(state.generateSuccessor(agentIndex, action), depth + 1, nextAgent) for action in legalActions)
 
 class AlphaBetaAgent(MultiAgentSearchAgent):
   """
