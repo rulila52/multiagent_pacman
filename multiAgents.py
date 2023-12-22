@@ -130,7 +130,7 @@ class MinimaxAgent(MultiAgentSearchAgent):
 
 class AlphaBetaAgent(MultiAgentSearchAgent):
   def getAction(self, gameState):
-    legalActions = gameState.getLegalActions(pacmanIndex)  # 0 - индекс Pacman
+    legalActions = gameState.getLegalActions(pacmanIndex)
     alpha = float("-inf")
     beta = float("inf")
     bestScore = float("-inf")
@@ -177,19 +177,31 @@ class AlphaBetaAgent(MultiAgentSearchAgent):
     return value
 
 class ExpectimaxAgent(MultiAgentSearchAgent):
-  """
-    Your expectimax agent (question 4)
-  """
-
   def getAction(self, gameState):
-    """
-      Returns the expectimax action using self.depth and self.evaluationFunction
+    legalActions = gameState.getLegalActions(pacmanIndex)
+    bestScore = float("-inf")
+    bestAction = None
 
-      All ghosts should be modeled as choosing uniformly at random from their
-      legal moves.
-    """
-    "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
+    for action in legalActions:
+      score = self.expectimax(gameState.generateSuccessor(pacmanIndex, action), 1, pacmanIndex)
+      if score > bestScore:
+        bestScore = score
+        bestAction = action
+
+    return bestAction
+
+  def expectimax(self, state, depth, agentIndex):
+    if depth == self.depth or state.isWin() or state.isLose():
+      return self.evaluationFunction(state)
+
+    legalActions = state.getLegalActions(agentIndex)
+    nextAgent = (agentIndex + 1) % state.getNumAgents()
+
+    if agentIndex == 0:  # Ход Pacman (слой Max)
+      return max(self.expectimax(state.generateSuccessor(agentIndex, action), depth, nextAgent) for action in legalActions)
+    else:  # Ход призраков (слой Expectation)
+      expectedValue = sum(self.expectimax(state.generateSuccessor(agentIndex, action), depth, nextAgent) for action in legalActions) / len(legalActions)
+      return expectedValue
 
 def betterEvaluationFunction(currentGameState):
   """
