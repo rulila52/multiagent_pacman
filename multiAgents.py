@@ -155,7 +155,7 @@ class AlphaBetaAgent(MultiAgentSearchAgent):
       legalActions = state.getLegalActions(agentIndex)
       nextAgent = (agentIndex + 1) % state.getNumAgents()
 
-      if agentIndex == 0:  # Ход Pacman (слой Max)
+      if agentIndex == pacmanIndex:  # Ход Pacman (слой Max)
         value = float("-inf")
         for action in legalActions:
           successor = state.generateSuccessor(agentIndex, action)
@@ -179,15 +179,8 @@ class AlphaBetaAgent(MultiAgentSearchAgent):
 class ExpectimaxAgent(MultiAgentSearchAgent):
   def getAction(self, gameState):
     legalActions = gameState.getLegalActions(pacmanIndex)
-    bestScore = float("-inf")
-    bestAction = None
-
-    for action in legalActions:
-      score = self.expectimax(gameState.generateSuccessor(pacmanIndex, action), 1, pacmanIndex)
-      if score > bestScore:
-        bestScore = score
-        bestAction = action
-
+    scores = [self.expectimax(gameState.generateSuccessor(pacmanIndex, action), 1, pacmanIndex) for action in legalActions]
+    bestAction = legalActions[scores.index(max(scores))]
     return bestAction
 
   def expectimax(self, state, depth, agentIndex):
@@ -200,8 +193,7 @@ class ExpectimaxAgent(MultiAgentSearchAgent):
     if agentIndex == 0:  # Ход Pacman (слой Max)
       return max(self.expectimax(state.generateSuccessor(agentIndex, action), depth, nextAgent) for action in legalActions)
     else:  # Ход призраков (слой Expectation)
-      expectedValue = sum(self.expectimax(state.generateSuccessor(agentIndex, action), depth, nextAgent) for action in legalActions) / len(legalActions)
-      return expectedValue
+      return sum(self.expectimax(state.generateSuccessor(agentIndex, action), depth + 1, nextAgent) for action in legalActions) / len(legalActions)
 
 def betterEvaluationFunction(currentGameState):
   """
