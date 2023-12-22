@@ -148,3 +148,33 @@ Pacman emerges victorious! Score: 516
 Pacman emerges victorious! Score: 516
 Pacman emerges victorious! Score: 516
 ```
+
+## Вопрос 3. Создать агента AlphaBetaAgent
+
+### Описание
+
+Создать в AlphaBetaAgent новый агент, который использует обрезку альфа-бета 
+для более эффективного исследования минимаксного дерева.
+
+### Описание улучшения
+
+Альфа-бета отсечение — это оптимизация алгоритма минимакса, предназначенная 
+для уменьшения количества рассматриваемых узлов в дереве игры. Алгоритм 
+использует два параметра, называемых "альфа" и "бета", чтобы уменьшить 
+диапазон значений, которые нужно рассматривать в узлах дерева.
+
+На макете minimaxClassic с глубиной 8, 10 тестов
+(`python pacman.py -p AlphaBetaAgent -l minimaxClassic -a depth=8`):
+
+```
+Pacman emerges victorious! Score: 516
+Pacman emerges victorious! Score: 516
+Pacman died! Score: -493
+Pacman emerges victorious! Score: 516
+Pacman emerges victorious! Score: 506
+Pacman emerges victorious! Score: 516
+Pacman emerges victorious! Score: 516
+Pacman died! Score: -497
+Pacman emerges victorious! Score: 516
+Pacman emerges victorious! Score: 516
+```

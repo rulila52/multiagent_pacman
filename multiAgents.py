@@ -129,16 +129,52 @@ class MinimaxAgent(MultiAgentSearchAgent):
       return min(self.minimax(state.generateSuccessor(agentIndex, action), depth + 1, nextAgent) for action in legalActions)
 
 class AlphaBetaAgent(MultiAgentSearchAgent):
-  """
-    Your minimax agent with alpha-beta pruning (question 3)
-  """
-
   def getAction(self, gameState):
-    """
-      Returns the minimax action using self.depth and self.evaluationFunction
-    """
-    "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
+    legalActions = gameState.getLegalActions(pacmanIndex)  # 0 - индекс Pacman
+    alpha = float("-inf")
+    beta = float("inf")
+    bestScore = float("-inf")
+    bestAction = None
+
+    for action in legalActions:
+      score = self.alphabeta(gameState.generateSuccessor(pacmanIndex, action), 1, pacmanIndex, alpha, beta)
+      if score > bestScore:
+        bestScore = score
+        bestAction = action
+      alpha = max(alpha, bestScore)
+
+    return bestAction
+
+  def alphabeta(self, state, depth, agentIndex, alpha, beta):
+    stack = [(state, depth, agentIndex, alpha, beta)]
+    while stack:
+      state, depth, agentIndex, alpha, beta = stack.pop()
+      if depth == self.depth or state.isWin() or state.isLose():
+        return self.evaluationFunction(state)
+
+      legalActions = state.getLegalActions(agentIndex)
+      nextAgent = (agentIndex + 1) % state.getNumAgents()
+
+      if agentIndex == 0:  # Ход Pacman (слой Max)
+        value = float("-inf")
+        for action in legalActions:
+          successor = state.generateSuccessor(agentIndex, action)
+          value = max(value, self.evaluationFunction(successor))
+          alpha = max(alpha, value)
+          if value >= beta:
+            break
+        stack.append((state, depth, nextAgent, alpha, beta))
+      else:  # Ход призраков (слой Min)
+        value = float("inf")
+        for action in legalActions:
+          successor = state.generateSuccessor(agentIndex, action)
+          value = min(value, self.evaluationFunction(successor))
+          beta = min(beta, value)
+          if value <= alpha:
+            break
+        stack.append((state, depth + 1, nextAgent, alpha, beta))
+
+    return value
 
 class ExpectimaxAgent(MultiAgentSearchAgent):
   """
