@@ -196,14 +196,25 @@ class ExpectimaxAgent(MultiAgentSearchAgent):
       return sum(self.expectimax(state.generateSuccessor(agentIndex, action), depth + 1, nextAgent) for action in legalActions) / len(legalActions)
 
 def betterEvaluationFunction(currentGameState):
-  """
-    Your extreme ghost-hunting, pellet-nabbing, food-gobbling, unstoppable
-    evaluation function (question 5).
+  pacmanPosition = currentGameState.getPacmanPosition()
+  currentScore = currentGameState.getScore()
+  ghostPositions = currentGameState.getGhostPositions()
+  remainingFood = currentGameState.getFood().asList()
+  capsules = currentGameState.getCapsules()
 
-    DESCRIPTION: <write something here so we know what you did>
-  """
-  "*** YOUR CODE HERE ***"
-  util.raiseNotDefined()
+  # Calculate the distance to the closest ghost
+  minGhostDistance = min([manhattanDistance(pacmanPosition, ghostPos) for ghostPos in ghostPositions]) if ghostPositions else 0
+
+  # Calculate the distance to the closest food
+  minFoodDistance = min([manhattanDistance(pacmanPosition, food) for food in remainingFood]) if remainingFood else 0
+
+  # Calculate the distance to the closest capsule
+  minCapsuleDistance = min([manhattanDistance(pacmanPosition, capsule) for capsule in capsules]) if capsules else 0
+
+  # Linear combination of features
+  score = currentScore + 1.0 / (minGhostDistance + 1) - 0.2 * minFoodDistance - 0.1 * minCapsuleDistance
+
+  return score
 
 # Abbreviation
 better = betterEvaluationFunction
