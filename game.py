@@ -9,6 +9,8 @@
 from util import *
 import time, os
 import traceback
+
+pacmanIndex = 0
   
 #######################
 # Parts worth reading #
@@ -21,7 +23,7 @@ class Agent:
 
   def registerInitialState(self, state): # inspects the starting state
   """
-  def __init__(self, index=0):
+  def __init__(self, index=pacmanIndex):
     self.index = index
 
   def getAction(self, state):
