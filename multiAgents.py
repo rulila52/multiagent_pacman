@@ -101,7 +101,7 @@ class MultiAgentSearchAgent(Agent):
   """
 
   def __init__(self, evalFn = 'scoreEvaluationFunction', depth = '2'):
-    self.index = pacmanIndex # Pacman is always agent index 0
+    self.index = pacmanIndex
     self.evaluationFunction = util.lookup(evalFn, globals())
     self.depth = int(depth)
 
@@ -209,9 +209,17 @@ def betterEvaluationFunction(currentGameState):
   scoreWeight = 10 * currentScore
   ghostWeight = 100 * minGhostDistance
   foodWeight = -10 * minFoodDistance
-  capsuleWeight = -15 * minCapsuleDistance
+  capsuleWeight = 15 * minCapsuleDistance
 
-  return scoreWeight + ghostWeight + foodWeight + capsuleWeight
+  addBonus = 0
+
+  if minCapsuleDistance < minGhostDistance / 2:
+    addBonus += 10000 * 1/(minCapsuleDistance + 1)
+
+  if currentGameState.getPacmanState().scaredTimer > 0:
+    addBonus += 1000
+
+  return scoreWeight + ghostWeight + foodWeight + capsuleWeight + addBonus
 
 # Abbreviation
 better = betterEvaluationFunction
