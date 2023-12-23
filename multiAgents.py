@@ -202,19 +202,16 @@ def betterEvaluationFunction(currentGameState):
   remainingFood = currentGameState.getFood().asList()
   capsules = currentGameState.getCapsules()
 
-  # Calculate the distance to the closest ghost
   minGhostDistance = min([manhattanDistance(pacmanPosition, ghostPos) for ghostPos in ghostPositions]) if ghostPositions else 0
-
-  # Calculate the distance to the closest food
   minFoodDistance = min([manhattanDistance(pacmanPosition, food) for food in remainingFood]) if remainingFood else 0
-
-  # Calculate the distance to the closest capsule
   minCapsuleDistance = min([manhattanDistance(pacmanPosition, capsule) for capsule in capsules]) if capsules else 0
 
-  # Linear combination of features
-  score = currentScore + 1.0 / (minGhostDistance + 1) - 0.2 * minFoodDistance - 0.1 * minCapsuleDistance
+  scoreWeight = 10 * currentScore
+  ghostWeight = 100 * minGhostDistance
+  foodWeight = -10 * minFoodDistance
+  capsuleWeight = -15 * minCapsuleDistance
 
-  return score
+  return scoreWeight + ghostWeight + foodWeight + capsuleWeight
 
 # Abbreviation
 better = betterEvaluationFunction

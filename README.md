@@ -273,21 +273,23 @@ BetterEvaluationFunction. Функция оценки должна оценив�
 
 ### Результаты тестов
 
-`python pacman.py -l smallClassic -p ExpectimaxAgent -a evalFn=better -q -n 10`
+`python pacman.py -l smallClassic -p ExpectimaxAgent -a evalFn=better -q -n 100`
 
 ```
-Pacman emerges victorious! Score: 967
-Pacman died! Score: -338
-Pacman emerges victorious! Score: 974
-Pacman emerges victorious! Score: 1359
-Pacman died! Score: -72
-Pacman died! Score: -196
-Pacman emerges victorious! Score: 972
-Pacman died! Score: -313
-Pacman emerges victorious! Score: 1175
-Pacman died! Score: -290
-Average Score: 423.8
-Scores:        967, -338, 974, 1359, -72, -196, 972, -313, 1175, -290
-Win Rate:      5/10 (0.50)
-Record:        Win, Loss, Win, Win, Loss, Loss, Win, Loss, Win, Loss
+Average Score: 263.82
+Scores:        513, -186, 758, -306, 767, 791, -308, -132, -25, -359, -266, -261, 
+559, -155, 67, -90, -194, -157, -165, -410, 540, 743, -200, 824, 815, -282, 842, 
+717, 690, 886, 698, 896, 739, -390, 759, 663, 735, -746, -447, -303, 1296, -167, 
+-219, -426, -353, 812, 677, -396, 914, -341, -301, 663, 1180, 598, -244, -21, 764, 
+872, 593, 758, -208, -212, 839, 879, -419, -107, -804, 927, 852, -455, -219, -202, 
+50, -172, 800, 707, 662, 909, 1164, 817, 826, -365, -289, 796, 793, 849, -417, 1244, 
+-418, 936, -365, -319, 918, -248, 570, -435, -370, -366, 1326, 629
+Win Rate:      50/100 (0.50)
+Record:        Win, Loss, Win, Loss, Win, Win, Loss, Loss, Loss, Loss, Loss, Loss, 
+Win, Loss, Loss, Loss, Loss, Loss, Loss, Loss, Win, Win, Loss, Win, Win, Loss, Win, 
+Win, Win, Win, Win, Win, Win, Loss, Win, Win, Win, Loss, Loss, Loss, Win, Loss, 
+Loss, Loss, Loss, Win, Win, Loss, Win, Loss, Loss, Win, Win, Win, Loss, Loss, Win, 
+Win, Win, Win, Loss, Loss, Win, Win, Loss, Loss, Loss, Win, Win, Loss, Loss, Loss, 
+Loss, Loss, Win, Win, Win, Win, Win, Win, Win, Loss, Loss, Win, Win, Win, Loss, 
+Win, Loss, Win, Loss, Loss, Win, Loss, Win, Loss, Loss, Loss, Win, Win
 ```
