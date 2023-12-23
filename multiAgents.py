@@ -101,7 +101,7 @@ class MultiAgentSearchAgent(Agent):
   """
 
   def __init__(self, evalFn = 'scoreEvaluationFunction', depth = '2'):
-    self.index = pacmanIndex # Pacman is always agent index 0
+    self.index = pacmanIndex
     self.evaluationFunction = util.lookup(evalFn, globals())
     self.depth = int(depth)
 
@@ -196,14 +196,30 @@ class ExpectimaxAgent(MultiAgentSearchAgent):
       return sum(self.expectimax(state.generateSuccessor(agentIndex, action), depth + 1, nextAgent) for action in legalActions) / len(legalActions)
 
 def betterEvaluationFunction(currentGameState):
-  """
-    Your extreme ghost-hunting, pellet-nabbing, food-gobbling, unstoppable
-    evaluation function (question 5).
+  pacmanPosition = currentGameState.getPacmanPosition()
+  currentScore = currentGameState.getScore()
+  ghostPositions = currentGameState.getGhostPositions()
+  remainingFood = currentGameState.getFood().asList()
+  capsules = currentGameState.getCapsules()
 
-    DESCRIPTION: <write something here so we know what you did>
-  """
-  "*** YOUR CODE HERE ***"
-  util.raiseNotDefined()
+  minGhostDistance = min([manhattanDistance(pacmanPosition, ghostPos) for ghostPos in ghostPositions]) if ghostPositions else 0
+  minFoodDistance = min([manhattanDistance(pacmanPosition, food) for food in remainingFood]) if remainingFood else 0
+  minCapsuleDistance = min([manhattanDistance(pacmanPosition, capsule) for capsule in capsules]) if capsules else 0
+
+  scoreWeight = 10 * currentScore
+  ghostWeight = 100 * minGhostDistance
+  foodWeight = -10 * minFoodDistance
+  capsuleWeight = 15 * minCapsuleDistance
+
+  addBonus = 0
+
+  if minCapsuleDistance < minGhostDistance / 2:
+    addBonus += 10000 * 1/(minCapsuleDistance + 1)
+
+  if currentGameState.getPacmanState().scaredTimer > 0:
+    addBonus += 1000
+
+  return scoreWeight + ghostWeight + foodWeight + capsuleWeight + addBonus
 
 # Abbreviation
 better = betterEvaluationFunction

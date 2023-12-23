@@ -644,12 +644,18 @@ def runGames( layout, pacman, ghosts, display, numGames, record, numTraining = 0
 
   if numGames > 1:
     scores = [game.state.getScore() for game in games]
+    scoresWin = [game.state.getScore() for game in games if game.state.isWin()]
+    scoresLose = [game.state.getScore() for game in games if game.state.isLose()]
     wins = [game.state.isWin() for game in games]
+    loses = [game.state.isLose() for game in games]
     winRate = wins.count(True)/ float(len(wins))
     print('Average Score:', sum(scores) / float(len(scores)))
-    print('Scores:       ', ', '.join([str(score) for score in scores]))
+    print('Average Win Score:', sum(scoresWin) / float(len(scoresWin)) if len(scoresWin) > 0 else 0)
+    print('Average Lose Score:', sum(scoresLose) / float(len(scoresLose)) if len(scoresLose) > 0 else 0)
+    if len(scores) < 10:
+      print('Scores:       ', ', '.join([str(score) for score in scores]))
     print('Win Rate:      %d/%d (%.2f)' % (wins.count(True), len(wins), winRate))
-    print('Record:       ', ', '.join([ ['Loss', 'Win'][int(w)] for w in wins]))
+    # print('Record:       ', ', '.join([ ['Loss', 'Win'][int(w)] for w in wins]))
 
   return games
 
