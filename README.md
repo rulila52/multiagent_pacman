@@ -62,7 +62,7 @@
 
 ### Описание улучшения
 
-[Посмотреть реализацию.](https://github.com/rulila52/multiagent_pacman/blob/master/multiAgents.py#L17-L86https://github.com/rulila52/multiagent_pacman/blob/748643d7d7a728076d14ce15fd400972d62cf775/multiAgents.py#L17-L86)
+[Посмотреть реализацию.](https://github.com/rulila52/multiagent_pacman/blob/master/multiAgents.py#L17-L86)
 Теперь он учитывает текущую ситуацию на поле. Не смотрит надолго вперед, 
 оценивает текущую ситуацию на поле. Довольно часто побеждает, но возникают 
 простои из-за анализа только текущей ситуации.
@@ -198,7 +198,7 @@ Pacman emerges victorious! Score: 516
 
 Создать ExpectimaxAgent, где ваш агент-агент больше не будет принимать 
 минимальное значение для всех действий призраков, а будет ожидать в соответствии 
-с моделью вашего агента того, как действуют призраки
+с моделью вашего агента того, как действуют призраки.
 
 ### Описание улучшения
 
@@ -220,7 +220,7 @@ Pacman emerges victorious! Score: 516
 
 ### Результаты тестов и сравнение ExpectimaxAgent с AlphaBetaAgent
 
-`python pacman.py -p AlphaBetaAgent -l trappedClassic -a depth=3 -q -n 10`
+`python pacman.py -p AlphaBetaAgent -l trappedClassic -a depth=8 -q -n 10`
 
 ```
 Pacman died! Score: -501
@@ -239,7 +239,7 @@ Win Rate:      0/10 (0.00)
 Record:        Loss, Loss, Loss, Loss, Loss, Loss, Loss, Loss, Loss, Loss
 ```
 
-`python pacman.py -p ExpectimaxAgent -l trappedClassic -a depth=3 -q -n 10`
+`python pacman.py -p ExpectimaxAgent -l trappedClassic -a depth=8 -q -n 10`
 
 ```
 Pacman emerges victorious! Score: 532
@@ -289,7 +289,6 @@ Average Win Score: 930.7966101694915
 Average Lose Score: -184.136460554371
 Win Rate:      531/1000 (0.53)
 ```
-
 
 ## Дополнительный вопрос. Написать своего агента
 

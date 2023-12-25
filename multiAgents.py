@@ -43,7 +43,7 @@ class ReflexAgent(Agent):
     bestIndices = [index for index in range(len(scores)) if scores[index] == bestScore]
     chosenIndex = random.choice(bestIndices) # Pick randomly among the best
 
-    "Add more of your code here if you want to"
+    # Add more of your code here if you want to
 
     return legalMoves[chosenIndex]
 
@@ -68,7 +68,7 @@ class ReflexAgent(Agent):
         # Если призрак в режиме испуга и близко к пакману, увеличиваем оценку
         ghostEval += 50
 
-
+    # Считаем оценку расстояния до еды
     minFoodDistanceScore = 2 if minFoodDistance == 0 else 1/minFoodDistance
 
     # Суммарная оценка, учитывающая расстояние до еды и состояние призраков
