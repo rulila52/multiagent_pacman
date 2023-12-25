@@ -225,18 +225,95 @@ def betterEvaluationFunction(currentGameState):
 better = betterEvaluationFunction
 
 class ContestAgent(MultiAgentSearchAgent):
-  """
-    Your agent for the mini-contest
-  """
-
   def getAction(self, gameState):
-    """
-      Returns an action.  You can use any method you want and search to any depth you want.
-      Just remember that the mini-contest is timed, so you have to trade off speed and computation.
+    legalActions = gameState.getLegalActions(pacmanIndex)
+    scores = [self.expectimax(gameState.generateSuccessor(pacmanIndex, action), 1, pacmanIndex) for action in legalActions]
 
-      Ghosts don't behave randomly anymore, but they aren't perfect either -- they'll usually
-      just make a beeline straight towards Pacman (or away from him if they're scared!)
-    """
-    "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
+    # Проверяем, не окружен ли пакман призраками
+    if self.isPacmanTrapped(gameState):
+      # Если окружен, выбираем лучшее действие из всех доступных
+      bestAction = legalActions[scores.index(max(scores))]
+    else:
+      # Иначе, применяем стратегии избегания призраков, приближения к капсулам, предпочтения дорог с едой и избегания тупиков
+      filteredActions = self.filterActions(gameState, legalActions)
+      if len(filteredActions) > 0:
+        scores = [self.expectimax(gameState.generateSuccessor(pacmanIndex, action), 1, pacmanIndex) for action in filteredActions]
+        bestAction = filteredActions[scores.index(max(scores))]
+      else:
+        bestAction = legalActions[scores.index(max(scores))]
 
+    return bestAction
+
+  def expectimax(self, state, depth, agentIndex):
+    if depth == self.depth or state.isWin() or state.isLose():
+      return self.evaluationFunction(state)
+
+    legalActions = state.getLegalActions(agentIndex)
+    nextAgent = (agentIndex + 1) % state.getNumAgents()
+
+    if agentIndex == 0:  # Ход Pacman (слой Max)
+      return max(self.expectimax(state.generateSuccessor(agentIndex, action), depth, nextAgent) for action in legalActions)
+    else:  # Ход призраков (слой Expectation)
+      return sum(self.expectimax(state.generateSuccessor(agentIndex, action), depth + 1, nextAgent) for action in legalActions) / len(legalActions)
+
+  def isPacmanTrapped(self, gameState):
+    pacmanPosition = gameState.getPacmanPosition()
+    legalActions = gameState.getLegalActions(0)  # Действия для пакмана
+
+    # Пакман окружен, если у него меньше вариантов движения, чем у призраков
+    return len(legalActions) <= gameState.getNumAgents() - 1
+
+  def filterActions(self, gameState, legalActions):
+    pacmanPosition = gameState.getPacmanPosition()
+
+    # Избегание близких призраков
+    filteredActions = [action for action in legalActions if self.isSafeFromGhosts(gameState.generateSuccessor(0, action))]
+
+    # Приближение к капсулам
+    filteredActions = self.moveToCapsules(gameState, filteredActions)
+
+    # Предпочтение дорог с едой
+    if gameState.getNumFood() > 0:
+      filteredActions = self.moveToFood(gameState, filteredActions)
+
+    # Избегание тупиков
+    filteredActions = self.avoidDeadEnds(gameState, filteredActions)
+
+    return filteredActions
+
+  def isSafeFromGhosts(self, gameState):
+    ghostPositions = [ghost.getPosition() for ghost in gameState.getGhostStates() if not ghost.scaredTimer > 0]
+    return all(manhattanDistance(gameState.getPacmanPosition(), ghost) >= 2 for ghost in ghostPositions)
+
+  def moveToCapsules(self, gameState, legalActions):
+    capsulePositions = gameState.getCapsules()
+    return sorted(legalActions, key=lambda action: min(manhattanDistance(gameState.getPacmanPosition(), capsule) for capsule in capsulePositions)) if len(capsulePositions) > 0 else legalActions
+
+  def moveToFood(self, gameState, legalActions):
+    foodPositions = gameState.getFood().asList()
+    return sorted(legalActions, key=lambda action: min(manhattanDistance(gameState.getPacmanPosition(), food) for food in foodPositions))
+
+  def avoidDeadEnds(self, gameState, legalActions):
+    pacmanPosition = gameState.getPacmanPosition()
+    ghostPositions = [ghost.getPosition() for ghost in gameState.getGhostStates()]
+
+    # Фильтруем действия, чтобы оставить только те, где у пакмана больше вариантов движения, чем у призраков в пределах 5 клеток
+    filteredActions = [action for action in legalActions if self.countPossiblePacmanMoves(gameState.generateSuccessor(0, action)) > len(gameState.getGhostStates())
+                       or any(manhattanDistance(pacmanPosition, ghost) <= 5 for ghost in ghostPositions)]
+
+    return filteredActions
+
+  def countPossiblePacmanMoves(self, gameState):
+    pacmanPosition = gameState.getPacmanPosition()
+    legalActions = gameState.getLegalActions(0)  # Действия для пакмана
+    possibleMoves = 0
+
+    for action in legalActions:
+      successorGameState = gameState.generateSuccessor(0, action)
+      successorPacmanPosition = successorGameState.getPacmanPosition()
+
+      # Проверяем, что пакман на следующем шаге не стоит на месте
+      if successorPacmanPosition != pacmanPosition:
+        possibleMoves += 1
+
+    return possibleMoves
